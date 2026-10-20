@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111116">
+<meta name="description" content="WhisperChat — simple username-based messaging."><title>WhisperChat</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js" defer></script>
+</head>
+<body>
+<main class="shell">
+<section id="config-view" class="center-view hidden"><div class="logo">w</div><p class="eyebrow">YOUR SPACE, YOUR PEOPLE</p><h1>WhisperChat</h1><p class="muted">Connect your Supabase project to start chatting.</p>
+<form id="config-form" class="panel"><label for="project-url">Supabase project URL</label><input id="project-url" type="url" placeholder="https://your-project.supabase.co" required>
+<label for="public-key">Supabase publishable / anon key</label><input id="public-key" placeholder="Public key — never a service-role key" required>
+<p class="hint">Stored in this browser only. See README.md for the database setup.</p><button class="primary" type="submit">Connect</button></form></section>
+<section id="auth-view" class="auth-layout hidden"><aside class="hero"><div class="brand"><span class="logo small">w</span>WhisperChat</div><div><p class="eyebrow">LESS NOISE. MORE YOU.</p><h1>Conversations<br>that feel closer.</h1><p>Find your people by username and pick up where you left off.</p></div><small>A calm little corner of the internet.</small></aside>
+<div class="auth-panel"><div class="brand mobile-brand"><span class="logo small">w</span>WhisperChat</div><p class="eyebrow">WELCOME</p><h2 id="auth-heading">Welcome back</h2><p class="muted" id="auth-subheading">Sign in to your account.</p>
+<form id="auth-form"><div id="username-field" class="hidden"><label for="username">Username</label><input id="username" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]+" placeholder="e.g. nakul_dev"></div>
+<label for="email">Email</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters"><button id="auth-submit" class="primary full" type="submit">Sign in</button></form>
+<p class="switch-line"><span id="switch-label">New to WhisperChat?</span> <button id="switch-mode" class="link-button" type="button">Create account</button></p><p class="hint">Email confirmation may be required depending on your Supabase settings.</p></div></section>
+<section id="chat-view" class="chat-layout hidden"><aside class="sidebar"><header class="side-header"><div class="brand"><span class="logo small">w</span>WhisperChat</div><button id="sign-out" class="icon-button" title="Sign out" aria-label="Sign out">↗</button></header>
+<div class="me-row"><div class="avatar" id="my-avatar">?</div><div class="me-info"><strong id="my-name">You</strong><span class="online">● Available</span></div><button id="notifications" class="icon-button" title="Enable notifications" aria-label="Enable notifications">♧</button></div>
+<div class="side-content"><div class="section-label">MESSAGES <span id="chat-count" class="count">0</span></div><div class="search"><span>⌕</span><input id="filter-chats" placeholder="Search conversations" aria-label="Search conversations"></div><div id="conversation-list" class="conversation-list"><p class="empty-note">Find someone to start chatting.</p></div></div><footer><span class="green-dot"></span> Connected to your space</footer></aside>
+<section class="chat-area"><div id="welcome-panel" class="welcome"><div class="welcome-logo">w</div><p class="eyebrow">YOUR INBOX</p><h2>Your people, right here.</h2><p class="muted">Search for a username to start a conversation.</p><form id="find-user-form" class="find-form"><span>@</span><input id="find-username" placeholder="Enter a username" required autocomplete="off"><button class="primary" type="submit">Find</button></form><p id="find-result" class="hint" aria-live="polite"></p></div>
+<div id="active-chat" class="active-chat hidden"><header class="chat-header"><button id="back-button" class="icon-button back" aria-label="Back to conversations">‹</button><div class="avatar" id="peer-avatar">?</div><div class="peer-info"><strong id="peer-name">Conversation</strong><span id="peer-status" class="muted">WhisperChat member</span></div><button id="refresh-chat" class="icon-button" aria-label="Refresh messages" title="Refresh">↻</button></header>
+<div id="messages" class="messages" aria-live="polite"></div><div id="typing-state" class="typing hidden">Typing…</div><form id="message-form" class="composer"><textarea id="message-text" rows="1" maxlength="4000" placeholder="Write a message…" aria-label="Write a message"></textarea><button class="send" type="submit" aria-label="Send message">➤</button></form><p class="composer-note">Enter to send · Shift + Enter for a new line</p></div></section></section>
+<div id="toast" class="toast" role="status" aria-live="polite"></div></main>
+</body></html>
