@@ -21,10 +21,23 @@
     if(data.session) { user=data.session.user; await loadProfile(); } else setView("auth-view");
   }
   async function loadProfile() {
-    const {data,error}=await client.from("profiles").select("*").eq("id",user.id).maybeSingle();
+    let {data,error}=await client.from("profiles").select("*").eq("id",user.id).maybeSingle();
     if(error) throw error;
     profile=data;
-    if(!profile) { setView("auth-view"); toast("Your profile is missing. Create an account again or check the SQL setup."); return; }
+    // If email confirmation was enabled at signup, the browser had no authenticated
+    // session to insert the profile. Create it now, after the user signs in.
+    if(!profile) {
+      const username=user.user_metadata?.username;
+      if(username && /^[A-Za-z0-9_]{3,24}$/.test(username)) {
+        const created=await client.from("profiles").insert({id:user.id,username}).select("*").single();
+        if(created.error) throw created.error;
+        profile=created.data;
+      } else {
+        setView("auth-view");
+        toast("Profile missing. Please create a new account with a username.");
+        return;
+      }
+    }
     $("my-name").textContent="@"+profile.username; $("my-avatar").textContent=initial(profile.username);
     setView("chat-view"); await loadConversations();
   }
@@ -33,7 +46,7 @@
   $("auth-form").addEventListener("submit",async e=>{e.preventDefault();if(!client)return toast("Connect Supabase first.");const email=$("email").value.trim(),password=$("password").value,username=$("username").value.trim();
     if(signupMode&&!/^[A-Za-z0-9_]{3,24}$/.test(username))return toast("Username must be 3–24 letters, numbers, or underscores.");
     $("auth-submit").disabled=true;
-    try { if(signupMode){const {data,error}=await client.auth.signUp({email,password});if(error)throw error;if(!data.user)throw new Error("Account was not created.");const {error:profileError}=await client.from("profiles").insert({id:data.user.id,username});if(profileError)throw profileError;if(!data.session){toast("Account created. Confirm your email, then sign in.");signupMode=false;$("switch-mode").click();return;}user=data.user;await loadProfile();}
+    try { if(signupMode){const {data,error}=await client.auth.signUp({email,password,options:{data:{username}}});if(error)throw error;if(!data.user)throw new Error("Account was not created.");if(!data.session){toast("Account created. Confirm your email, then sign in with the same account.");signupMode=false;$("switch-mode").click();return;}user=data.user;const {error:profileError}=await client.from("profiles").insert({id:data.user.id,username});if(profileError)throw profileError;await loadProfile();}
     else {const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;user=data.user;await loadProfile();} }
     catch(err){toast(err.message||"Authentication failed.");}finally{$("auth-submit").disabled=false;}
   });
